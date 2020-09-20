@@ -2,12 +2,14 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>lmassach - Accelerometer plots</title>
+        <link rel="stylesheet" href="/style.css" />
         <script>
             function myInit() {
                 let am = new Accelerometer({frequency: 60});
                 am.addEventListener('reading', () => {
-                    console.log("Accel = (" + am.x + ", " + am.y + ", " + am.z + ")");
+                    document.getElementById('curracc').innerHTML = "Accel = (" + am.x + ", " + am.y + ", " + am.z + ")";
                 });
                 am.start();
             }
@@ -16,5 +18,6 @@
     <body onload="myInit()">
         <h1>Acceleration plots</h1>
         <noscript>This page uses JavaScript.</noscript>
+        <p id="curracc"></p>
     </body>
 </html>
