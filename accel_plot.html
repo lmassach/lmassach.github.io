@@ -3,8 +3,18 @@
     <head>
         <meta charset="utf-8">
         <title>lmassach - Accelerometer plots</title>
+        <script>
+            function myInit() {
+                let am = new Accelerometer({frequency: 60});
+                am.addEventListener('reading', () => {
+                    console.log("Accel = (" + am.x + ", " + am.y + ", " + am.z + ")");
+                });
+                am.start();
+            }
+        </script>
     </head>
-    <body>
-        <h1>Test</h1>
+    <body onload="myInit()">
+        <h1>Acceleration plots</h1>
+        <noscript>This page uses JavaScript.</noscript>
     </body>
 </html>
