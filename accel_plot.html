@@ -5,14 +5,85 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>lmassach - Accelerometer plots</title>
         <link rel="stylesheet" href="/style.css" />
+        <style>
+            canvas {
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+            }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
         <script>
+            function myAvg(arr) {
+                return arr.reduce((a, v) => a + v) / arr.length;
+            }
             function myInit() {
                 let am = new Accelerometer({frequency: 60});
                 let irdg = 0;
                 let g = 9.81;
+                let ctx = document.getElementById('chartacc').getContext('2d');
+                let config = {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'x',
+                                backgroundColor: window.chartColors.red,
+                                borderColor: window.chartColors.red,
+                                fill: false,
+                                data: []
+                            },
+                            {
+                                label: 'y',
+                                backgroundColor: window.chartColors.blue,
+                                borderColor: window.chartColors.blue,
+                                fill: false,
+                                data: []
+                            },
+                            {
+                                label: 'z',
+                                backgroundColor: window.chartColors.yellow,
+                                borderColor: window.chartColors.yellow,
+                                fill: false,
+                                data: []
+                            }
+                        ],
+                    },
+                    options: {
+                        animation: { duration: 0 },
+                        tooltips: { enabled: false },
+                        hover: { animationDuration: 0},
+                        responsiveAnimationDuration: 0,
+                        elements: { line: { tension: 0 } }, // Disable beizers
+                        scales: {
+                            yaxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+                let chart = new Chart(ctx, config);
+                let rawdata = [[], [], []];
+                let ngrav = 60, navg = 6;
                 am.addEventListener('reading', () => {
-                    if (irdg % 6 == 0)
-                        document.getElementById('curracc').innerHTML = `a = (${am.x.toFixed(1)}, ${am.y.toFixed(1)}, ${am.z.toFixed(1)}) m/s&sup2; = (${(am.x / g).toFixed(2)}, ${(am.y / g).toFixed(2)}, ${(am.z / g).toFixed(2)}) g`;
+                    rawdata[0].push(am.x); if (rawdata[0].length > ngrav) rawdata[0].shift();
+                    rawdata[1].push(am.y); if (rawdata[1].length > ngrav) rawdata[1].shift();
+                    rawdata[3].push(am.z); if (rawdata[2].length > ngrav) rawdata[2].shift();
+                    if (irdg % 6 == 0) {
+                        let gx = myAvg(rawdata[0]), gy = myAvg(rawdata[1]), gz = myAvg(rawdata[2]);
+                        let ax = myAvg(rawdata[0].slice(-navg)) - gx;
+                        let ay = myAvg(rawdata[1].slice(-navg)) - gy;
+                        let az = myAvg(rawdata[2].slice(-navg)) - gz;
+                        document.getElementById('curracc').innerHTML =
+                            `raw = (${am.x.toFixed(1)}, ${am.y.toFixed(1)}, ${am.z.toFixed(1)}) m/s&sup2;
+                            = (${(am.x / g).toFixed(2)}, ${(am.y / g).toFixed(2)}, ${(am.z / g).toFixed(2)}) g<br/>
+                            gravity = (${gx.toFixed(1)}, ${gy.toFixed(1)}, ${gz.toFixed(1)}) m/s&sup2;
+                            = (${(gx / g).toFixed(2)}, ${(gy / g).toFixed(2)}, ${(gz / g).toFixed(2)}) g<br/>
+                            a = (${ax.toFixed(1)}, ${ay.toFixed(1)}, ${az.toFixed(1)}) m/s&sup2;
+                            = (${(ax / g).toFixed(2)}, ${(ay / g).toFixed(2)}, ${(az / g).toFixed(2)}) g`;
+                    }
                     irdg++;
                 });
                 am.start();
@@ -23,5 +94,6 @@
         <h1>Acceleration plots</h1>
         <noscript>This page uses JavaScript.</noscript>
         <p id="curracc"></p>
+        <p><canvas id="chartacc" width="400" height="400" style="width:90vw;height:90vh;max-width:150vmin;max-height:150vmin;"></canvas></p>
     </body>
 </html>
