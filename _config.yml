@@ -7,3 +7,6 @@ minima:
   skin: dark
 
 theme: minima
+
+plugins:
+ - jekyll-titles-from-headings

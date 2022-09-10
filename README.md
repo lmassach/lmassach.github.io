@@ -1,6 +1,4 @@
----
-title: About me
----
+# About me
 I am a particle physicist with a passion for code and electronics, and also languages.
 
 A few useful links:
