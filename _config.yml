@@ -1,12 +1,12 @@
 title: lmassa
 author: Ludovico Massaccesi
 email: 62757383+lmassach@users.noreply.github.com
-description: My personal webpages (in beta)
+description: My personal webpages
 
 minima:
   skin: dark
 
-theme: minima
+remote_theme: jekyll/minima
 
 plugins:
  - jekyll-titles-from-headings
